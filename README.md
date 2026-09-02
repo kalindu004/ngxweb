@@ -2,9 +2,9 @@
 
 Static replacement of the WordPress site at [ngxconsultants.com](https://www.ngxconsultants.com).
 
-This tree is a multi-page HTML/CSS/JS site with local images and a WhatsApp widget. It is intended for preview/hosting under `test.ngxconsultants.com` (see `.cpanel.yml`).
+This tree is a multi-page HTML/CSS/JS site with local images and a WhatsApp widget.
 
-**Hosting cutover of www is NOT done.** The live WordPress site remains at www until a separate cutover.
+**Hosting cutover of www is NOT done.** The live WordPress site remains at www until a separate cutover. This repo is not deployed via cPanel.
 
 ## Pages
 
@@ -22,4 +22,3 @@ This tree is a multi-page HTML/CSS/JS site with local images and a WhatsApp widg
 
 - Talk to us / Book a Session open WhatsApp (`wa.me/94768355252`) because the live Book a Session URL is not usable from crawlers.
 - Images are stored locally under `images/` (no WordPress hotlinks).
-- Optional cPanel Git deployment copies `index.html`, the other HTML files, `css/`, `js/`, and `images/` to `$HOME/test.ngxconsultants.com`.
