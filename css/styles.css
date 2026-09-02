@@ -120,8 +120,9 @@ a { color: var(--navy); }
 h1, h2, h3, h4 { line-height: 1.2; color: var(--navy-dark); }
 .hero h1 {
   color: #fff; font-size: clamp(2rem, 4.6vw, 3.6rem);
-  margin: 0 0 1.2rem; max-width: 16ch; font-weight: 700;
+  margin: 0 0 1.2rem; font-weight: 700;
 }
+.hero h1 .nowrap { white-space: nowrap; }
 .hero-actions { display: flex; gap: .8rem; flex-wrap: wrap; }
 .hero-dots {
   position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
