@@ -44,7 +44,8 @@
     slides.forEach((s, idx) => s.classList.toggle("is-on", idx === i));
     dots.forEach((d, idx) => d.classList.toggle("is-on", idx === i));
     if (titleEl && slides[i] && slides[i].dataset.title) {
-      titleEl.textContent = slides[i].dataset.title;
+      const t = slides[i].dataset.title;
+      titleEl.innerHTML = t.replace(/(Delivering\s+\S+)/, '<span class="nowrap">$1</span>');
     }
   }
   dots.forEach((d, idx) => d.addEventListener("click", () => show(idx)));
