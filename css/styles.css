@@ -352,6 +352,12 @@ footer a:hover { color: #fff; }
     align-items: center;
     text-align: center;
   }
+  .foot-grid > div { width: 100%; }
+  footer .foot-grid a:has(img) { display: block; }
+  footer .foot-grid img {
+    display: block;
+    margin-inline: auto;
+  }
   .credit { text-align: center; }
   .band-inner { justify-content: center; text-align: center; }
 }
