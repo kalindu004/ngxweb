@@ -119,10 +119,17 @@ a { color: var(--navy); }
 }
 h1, h2, h3, h4 { line-height: 1.2; color: var(--navy-dark); }
 .hero h1 {
-  color: #fff; font-size: clamp(2rem, 4.6vw, 3.6rem);
+  color: #fff; font-size: clamp(1.35rem, 3.2vw, 2.55rem);
   margin: 0 0 1.2rem; font-weight: 700;
+  max-width: none;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 .hero h1 .nowrap { white-space: nowrap; }
+@media (min-width: 700px) {
+  .hero h1 { white-space: nowrap; }
+}
+.hero-break { display: none; }
 .hero-actions { display: flex; gap: .8rem; flex-wrap: wrap; }
 .hero-dots {
   position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
@@ -344,6 +351,7 @@ footer a:hover { color: #fff; }
   .hero, .hero-copy { min-height: 74vh; }
 }
 @media (max-width: 640px) {
+  .hero-break { display: block; }
   .cards-4, .industries, .cards-2 { grid-template-columns: 1fr; }
   .top-offices { gap: .2rem; }
   footer { text-align: center; }
