@@ -324,7 +324,29 @@ footer a:hover { color: #fff; }
     position: relative;
     justify-content: center;
   }
-  .logo { margin-inline: auto; }
+  .site-header .logo {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .site-header .logo img { margin-inline: auto; }
+  footer { text-align: center; }
+  .foot-grid {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .foot-grid > div { width: 100%; }
+  .footer-logo {
+    display: flex;
+    justify-content: center;
+  }
+  .footer-logo img {
+    display: block;
+    margin-inline: auto;
+  }
+  .credit { text-align: center; }
   .nav {
     display: none;
   }
@@ -354,19 +376,5 @@ footer a:hover { color: #fff; }
   .hero-break { display: block; }
   .cards-4, .industries, .cards-2 { grid-template-columns: 1fr; }
   .top-offices { gap: .2rem; }
-  footer { text-align: center; }
-  .foot-grid {
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-  .foot-grid > div { width: 100%; }
-  footer .foot-grid a:has(img) { display: block; }
-  footer .foot-grid img {
-    display: block;
-    margin-inline: auto;
-  }
-  .credit { text-align: center; }
   .band-inner { justify-content: center; text-align: center; }
 }
