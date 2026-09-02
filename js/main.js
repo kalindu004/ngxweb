@@ -44,8 +44,15 @@
     slides.forEach((s, idx) => s.classList.toggle("is-on", idx === i));
     dots.forEach((d, idx) => d.classList.toggle("is-on", idx === i));
     if (titleEl && slides[i] && slides[i].dataset.title) {
-      const t = slides[i].dataset.title;
-      titleEl.innerHTML = t.replace(/(Delivering\s+\S+)/, '<span class="nowrap">$1</span>');
+      const raw = slides[i].dataset.title;
+      const comma = raw.indexOf(", ");
+      if (comma > 0) {
+        const first = raw.slice(0, comma);
+        const second = raw.slice(comma + 2).replace(/ /g, "\u00a0");
+        titleEl.innerHTML = first + ', <span class="nowrap">' + second + "</span>";
+      } else {
+        titleEl.textContent = raw;
+      }
     }
   }
   dots.forEach((d, idx) => d.addEventListener("click", () => show(idx)));
