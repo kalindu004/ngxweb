@@ -2,9 +2,22 @@
 
 Static replacement of the WordPress site at [ngxconsultants.com](https://www.ngxconsultants.com).
 
-This tree is a multi-page HTML/CSS/JS site with local images and a WhatsApp widget.
+Multi-page HTML/CSS/JS with local images and a WhatsApp widget.
 
 **Hosting cutover of www is NOT done.** The live WordPress site remains at www until a separate cutover. This repo is not deployed via cPanel.
+
+## Header and footer
+
+Edit these once, then stamp them into every page:
+
+- `partials/header.html`
+- `partials/footer.html`
+
+```bash
+python3 scripts/apply-chrome.py
+```
+
+The HTML pages Hostinger serves already contain the header and footer (no JavaScript includes). The script also marks the current nav item.
 
 ## Pages
 
