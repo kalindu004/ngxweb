@@ -33,5 +33,5 @@ The HTML pages Hostinger serves already contain the header and footer (no JavaSc
 
 ## Notes
 
-- Talk to us / Book a Session open WhatsApp (`wa.me/94768355252`) because the live Book a Session URL is not usable from crawlers.
+- Talk to us / Book a Session open Microsoft Bookings (`bookings.cloud.microsoft` Consulting Introduction Session).
 - Images are stored locally under `images/` (no WordPress hotlinks).
