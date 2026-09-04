@@ -95,7 +95,7 @@ a { color: var(--navy); }
 }
 
 /* Hero */
-.hero { position: relative; min-height: 70vh; color: #fff; overflow: hidden; background: var(--navy); }
+.hero { position: relative; min-height: 42vh; color: #fff; overflow: hidden; background: var(--navy); }
 .slides { position: absolute; inset: 0; }
 .slide {
   position: absolute; inset: 0;
@@ -109,7 +109,7 @@ a { color: var(--navy); }
   pointer-events: none;
 }
 .hero-copy {
-  position: relative; z-index: 3; min-height: 70vh;
+  position: relative; z-index: 3; min-height: 42vh;
   display: flex; flex-direction: column; justify-content: center;
   padding: 5rem 0 6rem;
 }
@@ -370,7 +370,7 @@ footer a:hover { color: #fff; }
     top: 50%;
     transform: translateY(-50%);
   }
-  .hero, .hero-copy { min-height: 60vh; }
+  .hero, .hero-copy { min-height: 36vh; }
 }
 @media (max-width: 640px) {
   .hero-break { display: block; }
