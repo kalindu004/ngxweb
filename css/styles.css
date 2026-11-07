@@ -93,6 +93,8 @@ a { color: var(--navy); }
   display: none; background: none; border: 0; color: #fff;
   font-size: 1.7rem; cursor: pointer; line-height: 1;
 }
+.mobile-cta { display: none; }
+.page-hero .hero-actions { margin-top: 1.15rem; }
 
 /* Hero */
 .hero { position: relative; min-height: 42vh; color: #fff; overflow: hidden; background: var(--navy); }
@@ -387,7 +389,7 @@ footer a:hover { color: #fff; }
     width: 100%;
   }
   .header-inner {
-    position: relative;
+    position: static;
     justify-content: center;
   }
   .site-header .logo {
@@ -418,7 +420,7 @@ footer a:hover { color: #fff; }
   }
   .nav.is-open {
     display: flex; flex-direction: column; position: absolute;
-    inset: auto 0  auto; top: 100%;
+    left: 0; right: 0; top: 100%;
     background: var(--navy-dark); padding: 1rem 1.2rem 1.4rem;
     align-items: center; gap: .85rem; text-align: center;
     box-shadow: 0 12px 24px rgba(0,0,0,.25);
@@ -430,12 +432,29 @@ footer a:hover { color: #fff; }
   }
   .has-sub .sub a { color: #d7e2ee; padding: .35rem 0; }
   .menu-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
     position: absolute;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 1rem;
+    top: 0;
+    height: 82px;
+    transform: none;
   }
+  .mobile-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: .65rem 1rem;
+    background: var(--yellow);
+    color: var(--navy-dark);
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: .82rem;
+  }
+  .mobile-cta:hover { background: var(--yellow-deep); color: var(--navy-dark); }
   .hero, .hero-copy { min-height: 36vh; }
 }
 @media (max-width: 640px) {
@@ -443,4 +462,8 @@ footer a:hover { color: #fff; }
   .cards-4, .industries, .cards-2 { grid-template-columns: 1fr; }
   .top-offices { gap: .2rem; }
   .band-inner { justify-content: center; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .slide { transition: none; }
 }

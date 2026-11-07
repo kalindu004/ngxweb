@@ -5,7 +5,7 @@ Edit partials/header.html and partials/footer.html, then run:
 
     python3 scripts/apply-chrome.py
 
-The built HTML is what Hostinger serves (no JS include, no build on the host).
+The stamped HTML is what GitHub Pages publishes from the repository root.
 """
 from __future__ import annotations
 

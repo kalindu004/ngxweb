@@ -56,5 +56,7 @@
     }
   }
   dots.forEach((d, idx) => d.addEventListener("click", () => show(idx)));
-  setInterval(() => show(i + 1), 6000);
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setInterval(() => show(i + 1), 6000);
+  }
 })();

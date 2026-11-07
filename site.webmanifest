@@ -1,0 +1,20 @@
+{
+  "name": "NGX Consultants",
+  "short_name": "NGX",
+  "icons": [
+    {
+      "src": "favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#021946",
+  "theme_color": "#021946"
+}
