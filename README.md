@@ -13,7 +13,7 @@ python3 scripts/apply-chrome.py
 python3 scripts/apply-meta.py
 ```
 
-`scripts/apply-meta.py` copies each page's title and description into the canonical and share tags, links the icon set, and rewrites `sitemap.xml`. Page titles and descriptions are edited in the HTML files.
+`scripts/apply-meta.py` copies each page's title and description into the canonical and share tags, links the icon set, and rewrites `sitemap.xml`. Both stamp scripts rewrite same-site `href` and `src` values to root-absolute paths (`/css/styles.css`, `/index.html`). That is required because GitHub Pages serves `404.html` at the missing URL, including nested paths such as `/old/service/`. Page titles and descriptions are edited in the HTML files.
 
 ## Icons and share image
 

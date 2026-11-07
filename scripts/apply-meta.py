@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from root_urls import root_local_urls  # noqa: E402
 from site_pages import INDEXABLE, PAGES  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -26,8 +27,12 @@ OLD_ICONS = (
     '  <link rel="apple-touch-icon" href="images/logo-mark.png">\n',
 )
 ANALYTICS = (
-    '  <script src="js/analytics-config.js"></script>\n'
-    '  <script src="js/analytics.js"></script>\n'
+    '  <script src="/js/analytics-config.js"></script>\n'
+    '  <script src="/js/analytics.js"></script>\n'
+)
+OLD_ANALYTICS = (
+    '  <script src="js/analytics-config.js"></script>\n',
+    '  <script src="js/analytics.js"></script>\n',
 )
 
 
@@ -60,11 +65,11 @@ def block(page: str, title: str, description: str) -> str:
         f'  <meta name="twitter:description" content="{desc_attr}">',
         f'  <meta name="twitter:image" content="{image}">',
         '  <meta name="twitter:image:alt" content="NGX Consultants">',
-        '  <link rel="icon" href="favicon.ico" sizes="any">',
-        '  <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32">',
-        '  <link rel="icon" href="favicon-16x16.png" type="image/png" sizes="16x16">',
-        '  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">',
-        '  <link rel="manifest" href="site.webmanifest">',
+        '  <link rel="icon" href="/favicon.ico" sizes="any">',
+        '  <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">',
+        '  <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16">',
+        '  <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">',
+        '  <link rel="manifest" href="/site.webmanifest">',
         '  <meta name="theme-color" content="#021946">',
         "<!-- /include:meta -->",
     ]
@@ -102,12 +107,14 @@ def apply(page: Path) -> None:
     )
     if count != 1:
         raise SystemExit(f"{page.name}: could not insert meta")
-    text = re.sub(r"css/styles\.css\?v=\d+", "css/styles.css?v=8", text)
+    text = re.sub(r"/?css/styles\.css\?v=\d+", "/css/styles.css?v=8", text)
     text = text.replace(ANALYTICS, "")
+    for old in OLD_ANALYTICS:
+        text = text.replace(old, "")
     if "</body>" not in text:
         raise SystemExit(f"{page.name}: missing body close")
     text = text.replace("</body>", ANALYTICS + "</body>", 1)
-    page.write_text(text)
+    page.write_text(root_local_urls(text))
     print("updated", page.name)
 
 

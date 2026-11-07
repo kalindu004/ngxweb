@@ -16,11 +16,13 @@ import threading
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
+from urllib.parse import urljoin, urlparse
 
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import preview  # noqa: E402
+from root_urls import root_local_urls  # noqa: E402
 from site_pages import INDEXABLE, ORIGIN, PAGES  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -72,9 +74,11 @@ def read(name: str) -> str:
 
 
 def local_path(url: str) -> str | None:
-    if url.startswith(("mailto:", "tel:", "http://", "https://", "//", "data:")):
+    if url.startswith(("mailto:", "tel:", "http://", "https://", "//", "data:", "#")):
         return None
     path = url.split("#", 1)[0].split("?", 1)[0]
+    if path.startswith("/"):
+        path = path[1:]
     return path or None
 
 
@@ -133,15 +137,21 @@ def check_pages() -> tuple[dict[str, str], dict[str, str]]:
             "apple-touch-icon.png",
             "site.webmanifest",
         ):
-            if f'href="{href}"' not in text:
-                fail(f"{name}: missing {href}")
+            if f'href="/{href}"' not in text:
+                fail(f"{name}: missing root-absolute /{href}")
         expected_robots = "noindex" if name == "404.html" else "index,follow"
         if meta(text, "robots") != expected_robots:
             fail(f"{name}: robots meta is not {expected_robots}")
         if 'class="mobile-cta"' not in text or BOOKING not in text:
             fail(f"{name}: missing the header call to action")
-        if "js/analytics-config.js" not in text or "js/analytics.js" not in text:
-            fail(f"{name}: analytics scripts are not referenced")
+        if 'src="/js/analytics-config.js"' not in text or 'src="/js/analytics.js"' not in text:
+            fail(f"{name}: analytics scripts are not root-absolute")
+        relative = re.search(
+            r'''(?:href|src)=["'](?!/|#|https?:|mailto:|tel:|data:|//)[^"']+["']''',
+            text,
+        )
+        if relative:
+            fail(f"{name}: relative local URL survives regeneration: {relative.group(0)}")
         if "googletagmanager" in text or "gtag(" in text:
             fail(f"{name}: analytics loader must stay in js/analytics.js")
         parser = PageParser()
@@ -217,8 +227,8 @@ def check_assets() -> None:
             if image.format != "ICO":
                 fail("favicon.ico is not an ICO")
     manifest = read("site.webmanifest")
-    if "favicon-32x32.png" not in manifest or "apple-touch-icon.png" not in manifest:
-        fail("manifest does not name the icons")
+    if '"/favicon-32x32.png"' not in manifest or '"/apple-touch-icon.png"' not in manifest:
+        fail("manifest icons are not root-absolute")
 
 
 def check_privacy_and_analytics() -> None:
@@ -275,26 +285,91 @@ def check_identity_files() -> None:
         fail(".nojekyll is missing")
 
 
+def fetch(url: str) -> tuple[int, bytes]:
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            return response.status, response.read()
+    except urllib.error.HTTPError as error:
+        return error.code, error.read()
+
+
 def check_custom_404() -> None:
+    sample = '<a href="index.html">Back to home</a><link href="css/styles.css?v=8">'
+    rewritten = root_local_urls(sample)
+    if 'href="/index.html"' not in rewritten or 'href="/css/styles.css?v=8"' not in rewritten:
+        fail("root rewriter does not fix 404 recovery and asset URLs")
+    if root_local_urls(rewritten) != rewritten:
+        fail("root rewriter is not safe to run on every regeneration")
+    for script in ("scripts/apply-chrome.py", "scripts/apply-meta.py"):
+        if "root_local_urls" not in read(script):
+            fail(f"{script} can stamp relative URLs back into 404.html")
+
     server = ThreadingHTTPServer(("127.0.0.1", 0), preview.Handler)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     port = server.server_address[1]
+    origin = f"http://127.0.0.1:{port}"
+    missing_paths = (
+        "/missing-page",
+        "/missing-page/",
+        "/old/service",
+        "/old/service/",
+    )
     try:
-        try:
-            urllib.request.urlopen(f"http://127.0.0.1:{port}/missing-page-check", timeout=5)
-            fail("missing path returned 200")
-        except urllib.error.HTTPError as error:
-            body = error.read().decode()
-            if error.code != 404:
-                fail(f"missing path status is {error.code}")
-            if "Page not found" not in body or 'content="noindex"' not in body:
-                fail("custom 404 body is not served for an unknown path")
-            if "GitHub Pages" in body and "Page not found · GitHub Pages" in body:
-                fail("unknown path still uses the default GitHub 404")
-        with urllib.request.urlopen(f"http://127.0.0.1:{port}/", timeout=5) as response:
-            if response.status != 200 or b"mobile-cta" not in response.read():
-                fail("home page did not serve the mobile call to action")
+        status, home = fetch(origin + "/")
+        if status != 200 or b"mobile-cta" not in home:
+            fail("home page did not serve the mobile call to action")
+        for path in missing_paths:
+            status, body = fetch(origin + path)
+            html = body.decode()
+            label = path
+            if status != 404:
+                fail(f"{label}: status is {status}, expected 404")
+                continue
+            if "Page not found" not in html or 'content="noindex"' not in html:
+                fail(f"{label}: custom 404 body was not served")
+            if "Page not found · GitHub Pages" in html:
+                fail(f"{label}: still the default GitHub 404")
+            if 'aria-controls="site-nav"' not in html or 'id="site-nav"' not in html:
+                fail(f"{label}: menu markup is missing")
+            page_url = origin + path
+            attrs = re.findall(r'''(?:href|src)=["']([^"']+)["']''', html)
+            resolved_paths = set()
+            for attr in attrs:
+                if attr.startswith(("#", "mailto:", "tel:", "data:")):
+                    continue
+                resolved = urlparse(urljoin(page_url, attr)).path
+                resolved_paths.add(resolved)
+                if resolved.startswith("/old/") or resolved.startswith("/missing-page/"):
+                    fail(f"{label}: {attr} resolves to {resolved}")
+            for required in (
+                "/css/styles.css",
+                "/js/main.js",
+                "/js/whatsapp-widget.js",
+                "/js/analytics-config.js",
+                "/js/analytics.js",
+                "/images/logo-dark.png",
+                "/favicon.ico",
+                "/index.html",
+                "/services.html",
+                "/faq.html",
+                "/privacy.html",
+            ):
+                if required not in resolved_paths:
+                    fail(f"{label}: missing root URL {required}")
+                    continue
+                asset_status, asset = fetch(origin + required)
+                if asset_status != 200 or not asset:
+                    fail(f"{label}: {required} returned {asset_status}")
+            css_status, css = fetch(origin + "/css/styles.css")
+            if b"mobile-cta" not in css:
+                fail(f"{label}: stylesheet did not load the site CSS ({css_status})")
+            logo_status, logo = fetch(origin + "/images/logo-dark.png")
+            if not logo.startswith(b"\x89PNG"):
+                fail(f"{label}: logo is not the PNG ({logo_status})")
+            home_status, recovered = fetch(origin + "/index.html")
+            if home_status != 200 or b"Creating Value" not in recovered:
+                fail(f"{label}: Back to home did not reach the home page")
     finally:
         server.shutdown()
 
@@ -324,7 +399,7 @@ def main() -> None:
         raise SystemExit(1)
     print("checklist:")
     for line in (
-        "1 custom 404: pass",
+        "1 custom 404, including nested and trailing-slash paths: pass",
         "2 header and home CTAs: pass",
         "3 unique titles: pass",
         "4 unique descriptions: pass",
