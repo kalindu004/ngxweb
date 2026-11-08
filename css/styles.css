@@ -254,6 +254,20 @@ section { padding: 4.4rem 0; }
 }
 .quote p { margin: 0 0 .6rem; font-style: italic; }
 .quote cite { font-style: normal; font-weight: 700; color: var(--navy); font-size: .9rem; }
+/* The Talk to NGX card is navy. A navy citation disappears, and the old
+   inline padding put the quote against the yellow rule. */
+.aside .quote {
+  background: transparent;
+  border-left-color: var(--yellow);
+  margin: 1.4rem 0 0;
+  padding: 0 0 0 1.125rem;
+}
+.aside .quote p { color: #f4f7fb; }
+.aside .quote cite {
+  color: #fff;
+  display: block;
+  padding-left: 1rem;
+}
 
 .role {
   background: #fff; border: 1px solid var(--line); padding: 1.2rem 1.25rem; margin: 0 0 1rem;
